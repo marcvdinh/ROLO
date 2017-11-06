@@ -27,12 +27,12 @@ import cv2
 import os
 import numpy as np
 import sys
-import ROLO_utils as utils
+import utils.ROLO_utils as utils
 '''----------------------------------------main-----------------------------------------------------'''
 def main(argv):
     ''' PARAMETERS '''
     num_steps= 6
-    test = 11
+    test = 13
 
     [wid, ht, sequence_name, dummy_1, dummy_2] = utils.choose_video_sequence(test)
 
@@ -41,12 +41,17 @@ def main(argv):
     yolo_out_path= os.path.join('benchmark/DATA', sequence_name, 'yolo_out/')
     rolo_out_path= os.path.join('benchmark/DATA', sequence_name, 'rolo_out_test/')
 
+    # img_fold_path = os.path.join('benchmark/UAV', sequence_name, 'img/')
+    # gt_file_path = os.path.join('benchmark/UAV', sequence_name, 'groundtruth_rect.txt')
+    # yolo_out_path = os.path.join('benchmark/UAV', sequence_name, 'yolo_out/')
+    # rolo_out_path = os.path.join('benchmark/UAV', sequence_name, 'rolo_out_test/')
+
     paths_imgs = utils.load_folder( img_fold_path)
     paths_rolo= utils.load_folder( rolo_out_path)
     lines = utils.load_dataset_gt( gt_file_path)
 
     # Define the codec and create VideoWriter object
-    fourcc= cv2.cv.CV_FOURCC(*'DIVX')
+    fourcc= cv2.VideoWriter_fourcc(*'DIVX')
     video_name = sequence_name + '_test.avi'
     video_path = os.path.join('output/videos/', video_name)
     video = cv2.VideoWriter(video_path, fourcc, 20, (wid, ht))

@@ -667,8 +667,8 @@ def iou(box1, box2):
     validate_box(box2)
 
     # change float to int, in order to prevent overflow
-    box1 = [int(i) for i in box1]
-    box2 = [int(i) for i in box2]
+    box1 = map(int, box1)
+    box2 = map(int, box2)
 
     tb = min(box1[0]+0.5*box1[2],box2[0]+0.5*box2[2])-max(box1[0]-0.5*box1[2],box2[0]-0.5*box2[2])
     lr = min(box1[1]+0.5*box1[3],box2[1]+0.5*box2[3])-max(box1[1]-0.5*box1[3],box2[1]-0.5*box2[3])
@@ -761,12 +761,6 @@ def load_yolo_output_test(fold, batch_size, num_steps, id):
 
 
 def choose_video_sequence(test):
-
-    if test == 00:
-        w_img, h_img = [1280, 720]
-        sequence_name = 'car2'
-        training_iters = None
-        testing_iters = None
     # For VOT-30:
     if test == 0:
         w_img, h_img = [480, 640]
