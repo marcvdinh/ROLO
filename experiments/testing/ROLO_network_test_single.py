@@ -48,7 +48,7 @@ class ROLO_TF:
     filewrite_img = False
     filewrite_txt = False
     disp_console = True
-    yolo_weights_file = 'weights/YOLO_small.ckpt'
+    yolo_weights_file = '/home/marc/ROLO/3rd\ party_upgrade/weights/YOLO_small.ckpt'
     alpha = 0.1
     threshold = 0.2
     iou_threshold = 0.5
@@ -120,7 +120,7 @@ class ROLO_TF:
         return feature
     '''---------------------------------------------------------------------------------------'''
     def build_networks(self):
-        if self.disp_console : print "Building ROLO graph..."
+        if self.disp_console : print ("Building ROLO graph...")
 
         # Build rolo layers
         self.lstm_module = self.LSTM_single('lstm_test', self.x, self.istate, self.weights, self.biases)
@@ -129,7 +129,7 @@ class ROLO_TF:
         self.sess.run(tf.initialize_all_variables())
         self.saver = tf.train.Saver()
         #self.saver.restore(self.sess, self.rolo_weights_file)
-        if self.disp_console : print "Loading complete!" + '\n'
+        if self.disp_console : print ("Loading complete!" + '\n')
 
 
     def testing(self, x_path, y_path):
@@ -158,7 +158,7 @@ class ROLO_TF:
             if (self.restore_weights == True):
                 sess.run(init)
                 self.saver.restore(sess, self.rolo_weights_file)
-                print "Loading complete!" + '\n'
+                print ("Loading complete!" + '\n')
             else:
                 sess.run(init)
 
@@ -197,14 +197,14 @@ class ROLO_TF:
                 if id % self.display_step == 0:
                     # Calculate batch loss
                     loss = sess.run(self.accuracy, feed_dict={self.x: batch_xs, self.y: batch_ys, self.istate: np.zeros((self.batch_size, 2*self.num_input))})
-                    print "Iter " + str(id*self.batch_size) + ", Minibatch Loss= " + "{:.6f}".format(loss) #+ "{:.5f}".format(self.accuracy)
+                    print ("Iter " + str(id*self.batch_size) + ", Minibatch Loss= " + "{:.6f}".format(loss)) #+ "{:.5f}".format(self.accuracy)
                     total_loss += loss
                 id += 1
                 print(id)
 
-            print "Testing Finished!"
+            print ("Testing Finished!")
             avg_loss = total_loss/id
-            print "Avg loss: " + str(avg_loss)
+            print ("Avg loss: " + str(avg_loss))
             #save_path = self.saver.save(sess, self.rolo_weights_file)
             #print("Model saved in file: %s" % save_path)
 
@@ -227,21 +227,22 @@ class ROLO_TF:
                 self.build_networks()
                 self.detect_from_file(utils.file_in_path)
             else:
-                print "Default: running ROLO test."
+                print ("Default: running ROLO test.")
                 self.build_networks()
 
-                test= 8
+                test= 00   #choose video sequence here
                 [self.w_img, self.h_img, sequence_name, dummy_1, self.testing_iters] = utils.choose_video_sequence(test)
 
-                x_path = os.path.join('benchmark/DATA', sequence_name, 'yolo_out/')
-                y_path = os.path.join('benchmark/DATA', sequence_name, 'groundtruth_rect.txt')
-                self.output_path = os.path.join('benchmark/DATA', sequence_name, 'rolo_out_test/')
+                x_path = os.path.join('/home/marc/Documents/benchmark/DATA', sequence_name, 'yolo_out/')
+                y_path = os.path.join('/home/marc/Documents/benchmark/DATA', sequence_name, 'groundtruth_rect.txt')
+                self.output_path = os.path.join('/home/marc/Documents/benchmark/DATA', sequence_name, 'rolo_out_test/')
                 utils.createFolder(self.output_path)
 
                 #self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_dropout_20.ckpt'
                 # self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_dropout_30.ckpt'
                 #self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_dropout_30_2.ckpt'
-                self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_30_2_nd_newfit.ckpt'
+                #self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_30_2_nd_newfit.ckpt'
+                self.rolo_weights_file = '/home/marc/ROLO/models/model_demo.ckpt'
                 self.testing(x_path, y_path)
 
     '''----------------------------------------main-----------------------------------------------------'''
