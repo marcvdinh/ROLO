@@ -1,1 +1,6 @@
-*~
+*.ckpt
+*.png
+*.jpeg
+**/models
+**/output
+**/weights
