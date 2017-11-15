@@ -92,7 +92,7 @@ class ROLO_TF:
         self.ROLO(argvs)
 
     def LSTM_single(self, name, _X, _istate, _weights, _biases):
-        with tf.device('/gpu:0'):
+        with tf.device('/cpu:0'):
             # input shape: (batch_size, n_steps, n_input)
             _X = tf.transpose(_X, [1, 0, 2])  # permute num_steps and batch_size
             # Reshape to prepare input to hidden activation
@@ -265,7 +265,8 @@ class ROLO_TF:
                 # self.rolo_weights_file= '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_step9_exp2.ckpt'
                 # self.rolo_weights_file= '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_step1_exp2.ckpt'
 
-                self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_step3_exp1_old.ckpt'
+                self.rolo_weights_file = '/home/marc/ROLO/models/model2_demo.ckpt'
+                #self.rolo_weights_file = '/home/marc/ROLO/models/model_step3_exp2.ckpt'
 
                 self.num_steps = 3  # number of frames as an input sequence
                 print("TESTING ROLO on video sequence: ", sequence_name)
