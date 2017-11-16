@@ -48,7 +48,7 @@ class ROLO_TF:
     filewrite_img = False
     filewrite_txt = False
     disp_console = True
-    yolo_weights_file = '/home/marc/ROLO/3rd\ party_upgrade/weights/YOLO_small.ckpt'
+    yolo_weights_file = '/home/tf/ROLO/3rd\ party_upgrade/weights/YOLO_small.ckpt'
     alpha = 0.1
     threshold = 0.2
     iou_threshold = 0.5
@@ -93,14 +93,16 @@ class ROLO_TF:
 
     def LSTM_single(self, name,  _X, _istate, _weights, _biases):
 
-        # input shape: (batch_size, n_steps, n_input)
-        _X = tf.transpose(_X, [1, 0, 2])  # permute num_steps and batch_size
-        # Reshape to prepare input to hidden activation
-        _X = tf.reshape(_X, [self.num_steps * self.batch_size, self.num_input]) # (num_steps*batch_size, num_input)
-        # Split data because rnn cell needs a list of inputs for the RNN inner loop
-        _X = tf.split(0, self.num_steps, _X) # n_steps * (batch_size, num_input)
-        #print("_X: ", _X)
-        cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input)
+        with tf.device('/cpu:0'):
+        #with tf.device('/device:GPU:0'):  #'not working on 0.11'
+            # input shape: (batch_size, n_steps, n_input)
+            _X = tf.transpose(_X, [1, 0, 2])  # permute num_steps and batch_size
+            # Reshape to prepare input to hidden activation
+            _X = tf.reshape(_X, [self.num_steps * self.batch_size, self.num_input])  # (num_steps*batch_size, num_input)
+            # Split data because rnn cell needs a list of inputs for the RNN inner loop
+            _X = tf.split(0, self.num_steps, _X)  # n_steps * (batch_size, num_input)
+
+        cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input, state_is_tuple = False)
         state = _istate
         for step in range(self.num_steps):
             outputs, state = tf.nn.rnn(cell, [_X[step]], state)
@@ -124,8 +126,9 @@ class ROLO_TF:
 
         # Build rolo layers
         self.lstm_module = self.LSTM_single('lstm_test', self.x, self.istate, self.weights, self.biases)
+
         self.ious= tf.Variable(tf.zeros([self.batch_size]), name="ious")
-        self.sess = tf.Session()
+        self.sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
         self.sess.run(tf.initialize_all_variables())
         self.saver = tf.train.Saver()
         #self.saver.restore(self.sess, self.rolo_weights_file)
@@ -230,19 +233,19 @@ class ROLO_TF:
                 print ("Default: running ROLO test.")
                 self.build_networks()
 
-                test= 00   #choose video sequence here
+                test= 7    #choose video sequence here
                 [self.w_img, self.h_img, sequence_name, dummy_1, self.testing_iters] = utils.choose_video_sequence(test)
 
-                x_path = os.path.join('/home/marc/Documents/benchmark/DATA', sequence_name, 'yolo_out/')
-                y_path = os.path.join('/home/marc/Documents/benchmark/DATA', sequence_name, 'groundtruth_rect.txt')
-                self.output_path = os.path.join('/home/marc/Documents/benchmark/DATA', sequence_name, 'rolo_out_test/')
+                x_path = os.path.join('/home/tf/Documents/benchmark/DATA', sequence_name, 'yolo_out/')
+                y_path = os.path.join('/home/tf/Documents/benchmark/DATA', sequence_name, 'groundtruth_rect.txt')
+                self.output_path = os.path.join('/home/tf/Documents/benchmark/DATA', sequence_name, 'rolo_out_test/')
                 utils.createFolder(self.output_path)
 
                 #self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_dropout_20.ckpt'
                 # self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_dropout_30.ckpt'
                 #self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_dropout_30_2.ckpt'
                 #self.rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_30_2_nd_newfit.ckpt'
-                self.rolo_weights_file = '/home/marc/ROLO/models/model_demo.ckpt'
+                self.rolo_weights_file = '/home/tf/ROLO/models/model_demo.ckpt'
                 self.testing(x_path, y_path)
 
     '''----------------------------------------main-----------------------------------------------------'''

@@ -27,7 +27,8 @@ Description:
 import ROLO_utils as utils
 
 import tensorflow as tf
-from tensorflow.models.rnn import rnn, rnn_cell
+#from tensorflow.models.rnn import rnn, rnn_cell
+from tensorflow.contrib import rnn
 import cv2
 
 import numpy as np
@@ -38,7 +39,7 @@ import random
 
 class ROLO_TF:
     disp_console = False
-    restore_weights = True#False
+    restore_weights = False #True
 
     # YOLO parameters
     fromfile = None
@@ -103,10 +104,11 @@ class ROLO_TF:
         _X = tf.split(axis=0, num_or_size_splits=self.num_steps, value=_X) # n_steps * (batch_size, num_input)
         #print("_X: ", _X)
 
-        cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input)
+        #cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input)
+        cell = rnn.BasicLSTMCell(self.num_input, self.num_input, state_is_tuple=False)
         state = _istate
         for step in range(self.num_steps):
-            outputs, state = tf.nn.rnn(cell, [_X[step]], state)
+            outputs, state = rnn.static_rnn(cell, [_X[step]], state)
             tf.get_variable_scope().reuse_variables()
 
         #print("output: ", outputs)
@@ -139,7 +141,7 @@ class ROLO_TF:
 
     '''---------------------------------------------------------------------------------------'''
     def build_networks(self):
-        if self.disp_console : print "Building ROLO graph..."
+        if self.disp_console : print ("Building ROLO graph...")
 
         # Build rolo layers
         self.lstm_module = self.LSTM_single('lstm_test', self.x, self.istate, self.weights, self.biases)
@@ -148,7 +150,7 @@ class ROLO_TF:
         self.sess.run(tf.global_variables_initializer())
         self.saver = tf.train.Saver()
         #self.saver.restore(self.sess, self.rolo_weights_file)
-        if self.disp_console : print "Loading complete!" + '\n'
+        if self.disp_console : print ("Loading complete!" + '\n')
 
 
     def training(self, x_path, y_path):
@@ -177,7 +179,7 @@ class ROLO_TF:
             if (self.restore_weights == True):
                 sess.run(init)
                 self.saver.restore(sess, self.rolo_weights_file)
-                print "Loading complete!" + '\n'
+                print ("Loading complete!" + '\n')
             else:
                 sess.run(init)
 
@@ -211,16 +213,16 @@ class ROLO_TF:
                 if id % self.display_step == 0:
                     # Calculate batch loss
                     loss = sess.run(self.accuracy, feed_dict={self.x: batch_xs, self.y: batch_ys, self.istate: np.zeros((self.batch_size, 2*self.num_input))})
-                    if self.disp_console: print "Iter " + str(id*self.batch_size) + ", Minibatch Loss= " + "{:.6f}".format(loss) #+ "{:.5f}".format(self.accuracy)
+                    if self.disp_console: print ("Iter " + str(id*self.batch_size) + ", Minibatch Loss= " + "{:.6f}".format(loss)) #+ "{:.5f}".format(self.accuracy)
                     total_loss += loss
                 id += 1
                 if self.disp_console: print(id)
 
                 # show 3 kinds of locations, compare!
 
-            print "Optimization Finished!"
+            print ("Optimization Finished!")
             avg_loss = total_loss/id
-            print "Avg loss: " + str(avg_loss)
+            print ("Avg loss: " + str(avg_loss))
             save_path = self.saver.save(sess, self.rolo_weights_file)
             print("Model saved in file: %s" % save_path)
 
@@ -229,7 +231,7 @@ class ROLO_TF:
 
     def train_30_2(self):
         print("TRAINING ROLO...")
-        log_file = open("output/trainging-step1-exp2.txt", "a") #open in append mode
+        log_file = open("/home/marc/output/training-step1-exp2.txt", "a") #open in append mode
         self.build_networks()
 
         ''' TUNE THIS'''
@@ -252,7 +254,7 @@ class ROLO_TF:
             if (self.restore_weights == True):
                 sess.run(init)
                 self.saver.restore(sess, self.rolo_weights_file)
-                print "Loading complete!" + '\n'
+                print ("Loading complete!" + '\n')
             else:
                 sess.run(init)
 
@@ -298,14 +300,14 @@ class ROLO_TF:
                     if id % self.display_step == 0:
                         # Calculate batch loss
                         loss = sess.run(self.accuracy, feed_dict={self.x: batch_xs, self.y: batch_ys, self.istate: np.zeros((self.batch_size, 2*self.num_input))})
-                        if self.disp_console: print "Iter " + str(id*self.batch_size) + ", Minibatch Loss= " + "{:.6f}".format(loss) #+ "{:.5f}".format(self.accuracy)
+                        if self.disp_console: print ("Iter " + str(id*self.batch_size) + ", Minibatch Loss= " + "{:.6f}".format(loss)) #+ "{:.5f}".format(self.accuracy)
                         total_loss += loss
                     id += 1
                     if self.disp_console: print(id)
 
                 #print "Optimization Finished!"
                 avg_loss = total_loss/id
-                print "Avg loss: " + sequence_name + ": " + str(avg_loss)
+                print ("Avg loss: " + sequence_name + ": " + str(avg_loss))
 
                 log_file.write(str("{:.3f}".format(avg_loss)) + '  ')
                 if i+1==num_videos:

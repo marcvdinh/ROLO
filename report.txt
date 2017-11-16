@@ -1,0 +1,25 @@
+================================================================================
+Input tree: '3rd party/'
+================================================================================
+--------------------------------------------------------------------------------
+Processing file '3rd party/YOLO_network.py'
+ outputting to '3rd party_upgrade/YOLO_network.py'
+--------------------------------------------------------------------------------
+
+'3rd party/YOLO_network.py' Line 85
+--------------------------------------------------------------------------------
+
+Renamed function 'tf.initialize_all_variables' to 'tf.global_variables_initializer'
+
+    Old: 		self.sess.run(tf.initialize_all_variables())
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+    New: 		self.sess.run(tf.global_variables_initializer())
+                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~    
+
+
+--------------------------------------------------------------------------------
+Processing file '3rd party/sort_yolo.py'
+ outputting to '3rd party_upgrade/sort_yolo.py'
+--------------------------------------------------------------------------------
+
+

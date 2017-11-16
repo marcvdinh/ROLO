@@ -91,8 +91,8 @@ class ROLO_TF:
         self.ROLO(argvs)
 
     def LSTM_single(self, name, _X, _istate, _weights, _biases):
-        with tf.device('/cpu:0'):
-        #with tf.device('/device:GPU:0'):  'not working on 0.11'
+        #with tf.device('/cpu:0'):
+        with tf.device('/device:GPU:0'):  #'not working on 0.11'
             # input shape: (batch_size, n_steps, n_input)
             _X = tf.transpose(_X, [1, 0, 2])  # permute num_steps and batch_size
             # Reshape to prepare input to hidden activation
@@ -100,7 +100,7 @@ class ROLO_TF:
             # Split data because rnn cell needs a list of inputs for the RNN inner loop
             _X = tf.split(0, self.num_steps, _X)  # n_steps * (batch_size, num_input)
 
-        cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input)
+        cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input, state_is_tuple = False)
         state = _istate
         for step in range(self.num_steps):
             outputs, state = tf.nn.rnn(cell, [_X[step]], state)

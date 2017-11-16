@@ -24,7 +24,7 @@ Description:
 '''
 import os, sys, time
 import numpy as np
-import configparser
+import ConfigParser
 import cv2
 import pickle
 import tensorflow as tf
@@ -77,7 +77,7 @@ class ROLO_utils:
 
         # Network Parameters
         def loadCfg(self):
-                Config = configparser.ConfigParser()
+                Config = ConfigParser.ConfigParser()
                 Config.read(self.cfgPath)
                 Sections = Config.sections()
 
@@ -762,11 +762,11 @@ def load_yolo_output_test(fold, batch_size, num_steps, id):
 
 def choose_video_sequence(test):
 
-    if test == 00:
+    if test == 44:
         w_img, h_img = [1280, 720]
-        sequence_name = 'car2'
-        training_iters = None
-        testing_iters = None
+        sequence_name = 'bike1'
+        training_iters = 100
+        testing_iters = 1000
     # For VOT-30:
     if test == 0:
         w_img, h_img = [480, 640]

@@ -15,7 +15,7 @@ class YOLO_TF:
 	filewrite_img = False
 	filewrite_txt = False
 	disp_console = True
-	weights_file = '/home/marc/ROLO/3rd\ party_upgrade/weights/YOLO_small.ckpt'
+	weights_file = '/home/tf/ROLO/3rd\ party_upgrade/weights/YOLO_small.ckpt'
 	alpha = 0.1
 	threshold = 0.08
 	iou_threshold = 0.5
