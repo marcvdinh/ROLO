@@ -15,7 +15,7 @@ class YOLO_TF:
 	filewrite_img = False
 	filewrite_txt = False
 	disp_console = True
-	weights_file = '/home/tf/ROLO/3rd\ party_upgrade/weights/YOLO_small.ckpt'
+	weights_file = '/home/marc/ROLO/3rd\ party_upgrade/weights/YOLO_small.ckpt'
 	alpha = 0.1
 	threshold = 0.08
 	iou_threshold = 0.5
@@ -82,7 +82,7 @@ class YOLO_TF:
 		#skip dropout_31
 		self.fc_32 = self.fc_layer(32,self.fc_30,1470,flat=False,linear=True)
 		self.sess = tf.Session()
-		self.sess.run(tf.global_variables_initializer())
+		self.sess.run(tf.initialize_all_variables())
 		self.saver = tf.train.Saver()
 		self.saver.restore(self.sess,self.weights_file)
 		if self.disp_console : print ("Loading complete!" + '\n')
