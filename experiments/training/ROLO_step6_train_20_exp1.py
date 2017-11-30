@@ -38,7 +38,7 @@ import random
 
 class ROLO_TF:
     disp_console = False
-    restore_weights = True#False
+    restore_weights = False
 
     # YOLO parameters
     fromfile = None
@@ -58,7 +58,7 @@ class ROLO_TF:
     w_img, h_img = [352, 240]
 
     # ROLO Network Parameters
-    rolo_weights_file = '/u03/Guanghan/dev/ROLO-dev/output/ROLO_model/model_step6_exp1.ckpt' 
+    rolo_weights_file = '/home/marc/ROLO/models/model_step6_exp1.ckpt' 
     lstm_depth = 3
     num_steps = 6  # number of frames as an input sequence
     num_feat = 4096
@@ -103,7 +103,7 @@ class ROLO_TF:
         _X = tf.split(0, self.num_steps, _X) # n_steps * (batch_size, num_input)
         #print("_X: ", _X)
 
-        cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input)
+        cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input, state_is_tuple = False)
         state = _istate
         for step in range(self.num_steps):
             outputs, state = tf.nn.rnn(cell, [_X[step]], state)
@@ -247,9 +247,9 @@ class ROLO_TF:
                 i = epoch % num_videos
                 [self.w_img, self.h_img, sequence_name, dummy, self.training_iters]= utils.choose_video_sequence(i)
 
-                x_path = os.path.join('benchmark/DATA', sequence_name, 'yolo_out/')
-                y_path = os.path.join('benchmark/DATA', sequence_name, 'groundtruth_rect.txt')
-                self.output_path = os.path.join('benchmark/DATA', sequence_name, 'rolo_out_train/')
+                x_path = os.path.join('/home/marc/Documents/benchmark/DATA', sequence_name, 'yolo_out/')
+                y_path = os.path.join('/home/marc/Documents/benchmark/DATA', sequence_name, 'groundtruth_rect.txt')
+                self.output_path = os.path.join('/home/marc/Documents/benchmark/DATA', sequence_name, 'rolo_out_train/')
                 utils.createFolder(self.output_path)
                 total_loss = 0
                 id = 0

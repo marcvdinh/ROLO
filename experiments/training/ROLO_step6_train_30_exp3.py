@@ -107,7 +107,7 @@ class ROLO_TF:
         _X = tf.split(0, self.num_steps, _X) # n_steps * (batch_size, num_input)
         #print("_X: ", _X)
 
-        cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input)
+        cell = tf.nn.rnn_cell.LSTMCell(self.num_input, self.num_input, state_is_tuple = False)
         state = _istate
         for step in range(self.num_steps):
             outputs, state = tf.nn.rnn(cell, [_X[step]], state)
