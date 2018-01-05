@@ -1,9 +1,18 @@
-(1)ROLO Works on stationary shots: the LSTM remembers features of the object during previous frames, I think if the whole image shifts and changes, the LSTM breaks. exemple: it had no problems on Freeman1 but did not perform well on Bolt2
+(1) ROLO Works on stationary camera: the LSTM remembers features of the object during previous frames,  but when the whole image shifts, the LSTM does not provide satisfactory result. 
+Example: it had no problems on Freeman1 but did not perform well on Bolt2, both are tracking humans but the latter is a moving shot.
 
-(2)YOLO works on bigger objects:  vanilla YOLO uses a 7x7 grid and resizes the image, this implies loss of features/information on small objects. exemple: YOLO lost the car on Car1 when the drone took altitude. 
+(2) YOLO works on bigger objects: we have control over the granularity (with the size of the grid), depending on the altitude we should tune the grid to detect different sizes using an auto-adaptative algorithm. Altitude can be provided by the metadata, or several passes with a finer grid could be implemented.
 
-(3)YOLO doesnt work well on aerial shots: YOLO was trained on ground perspective. It performed poorly on UAV sequences. But also objects are smaller in UAV sequences (2) -> have to test it on clean pictures
+(2 bis) However we are ultimately limited by the pixel size. We expect loss of features/information on  very small objects (less pixels available). That is to say the finest granularity attainable cannot be smaller than the pixel. 
 
-(4)ROLO tracking quality seems to rely heavily on YOLO identification. It only has the upper hand when occlusion occurs. ROLO fills in the frames where YOLO is missing. (question: Advantage of the LSTM vs linear interpolation for missing frames)
+Example: YOLO lost the car on Car1 when the drone took altitude. 
 
-(5)Vanilla ROLO uses GT for each frame for testing AND evaluation (question: pertinence of the system if it relies on groundtruth to track)
+(3) YOLO doesn't work well on aerial shots: YOLO was trained on ground perspective. It performed poorly on UAV sequences. We will have to test it on relevant pictures.
+
+(4) LSTM tracking quality seems to rely heavily on YOLO identification. It only has the upper hand when occlusion occurs. ROLO fills in the frames where YOLO skips. 
+Question: Advantage of the LSTM vs linear interpolation for missing frames, especially given that vehicles are rigid bodies - not subject to any deformations or shifts of perspective.
+
+(5) Vanilla ROLO uses ground truth (manual labels) for each frame to isolate the tracked object among the list of identified object, which is the closest bounding box to the gt.
+Question: pertinence of the system if it relies on ground truth for tracking
+
+(6) Current system is divided in 2 parts. Firstly, YOLO is run on the entire sequence. Secondly, the LSTMs. We lose the feature of YOLO running in real-time. We could implement a buffer for the YOLO output, so we can feed the LSTM continuously and reduce delay.

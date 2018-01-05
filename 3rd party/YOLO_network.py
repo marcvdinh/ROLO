@@ -602,8 +602,8 @@ class YOLO_TF:
 def main(argvs):
 	yolo = YOLO_TF(argvs)
 
-	test = 4
-	heatmap= False#True
+	test = 11
+	heatmap= True
 	'''
 	VOT30
 	        0:'Human2'
